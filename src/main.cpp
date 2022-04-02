@@ -2,6 +2,7 @@
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
 #include "Variables.hpp"
+#include "Main.hpp"
 
 int main(int argc, char **argv)
 {
