@@ -9,6 +9,7 @@ namespace Game
 {
 	static std::string closeButtonPath = appInfo.ResLocation + "/sprites/x_button.png";
 	static SDL_Texture *closeButtonTexture = Birb::Resources::LoadTexture(closeButtonPath);
+	static Audio::SoundFile ClickSound(click_sound_path);
 	struct WindowOpts
 	{
 		WindowOpts(std::string title, Birb::Vector2int dimensions);

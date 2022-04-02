@@ -126,12 +126,14 @@ int main(int argc, char **argv)
 void PlayGame()
 {
 	Debug::Log("Starting game");
+	ClickSound.play();
 	MainMenuScene.Deactivate();
 	GameScene.Activate();
 }
 
 void ToggleApplicationMenu()
 {
+	ClickSound.play();
 	applicationMenu.active = !applicationMenu.active;
 }
 
