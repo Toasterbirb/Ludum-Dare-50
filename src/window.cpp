@@ -12,6 +12,7 @@ namespace Game
 	static int titleBarHeight = 20;
 	static void onCloseClick(Birb::Scene *scene)
 	{
+		ClickSound.play();
 		scene->Clear();
 		scene->Deactivate();
 	}
