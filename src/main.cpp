@@ -3,126 +3,125 @@
 #include <birb2d/UI.hpp>
 #include "Variables.hpp"
 
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	Birb::TimeStep timeStep;
-	timeStep.Init(&window);
+    Birb::TimeStep timeStep;
+    timeStep.Init(&window);
 
-	/* Disable everything else but the main menu in the beginning */
-	const int SCENE_COUNT = 3;
+    /* Disable everything else but the main menu in the beginning */
+    const int SCENE_COUNT = 3;
 
-	MainMenu.Activate();
-	Game.Deactivate();
-	EndScreen.Deactivate();
+    MainMenu.Activate();
+    Game.Deactivate();
+    EndScreen.Deactivate();
 
-	UI interface;
+    UI interface;
 
-	/* Add some objects to the main menu */
-	MainMenu.AddObject(&titleText);
-	MainMenu.AddObject(&playButton);
-	interface.AddButton(&playButton);
-	playButton.clickComponent = EntityComponent::Click(PlayGame);
+    /* Add some objects to the main menu */
+    MainMenu.AddObject(&titleText);
+    MainMenu.AddObject(&playButton);
+    interface.AddButton(&playButton);
+    playButton.clickComponent = EntityComponent::Click(PlayGame);
 
-	/* Game variables */
-	taskBar.color = 0x818181;
+    /* Game variables */
+    taskBar.color = 0x818181;
 
-	/* Taskbar */
-	Entity taskBarButtonEntity("Taskbar button");
-	taskBarButtonEntity.clickComponent = EntityComponent::Click(ToggleApplicationMenu);
+    /* Taskbar */
+    Entity taskBarButtonEntity("Taskbar button");
+    taskBarButtonEntity.clickComponent = EntityComponent::Click(ToggleApplicationMenu);
 
+    /* taskBarButtonEntity */
+    Rect taskBarButton(3, window.dimensions.y - 21, 100, 18);
+    taskBarButton.color = 0xc3c3c3;
+    taskBarButton.renderingPriority = 1;
 
-	Rect taskBarButton(3, window.dimensions.y - 21, 100, 18);
-	taskBarButton.color = 0xc3c3c3;
-	taskBarButton.renderingPriority = 1;
+    taskBarButtonEntity.rect = taskBarButton;
+    interface.AddButton(&taskBarButtonEntity);
 
-	taskBarButtonEntity.rect = taskBarButton;
-	interface.AddButton(&taskBarButtonEntity);
+    /* taskBarButtonCenter */
+    Rect taskBarButtonCenter(5, window.dimensions.y - 19, 96, 14);
+    taskBarButtonCenter.color = 0xDCDCDC;
+    taskBarButtonCenter.renderingPriority = 2;
 
+    taskBarButtonText.renderingPriority = 3;
 
-	Rect taskBarButtonCenter(5, window.dimensions.y - 19, 96, 14);
-	taskBarButtonCenter.color = 0xDCDCDC;
-	taskBarButtonCenter.renderingPriority = 2;
+    applicationMenu.color = 0xA9A9A9;
+    applicationMenu.active = false;
 
-	taskBarButtonText.renderingPriority = 3;
+    Game.AddObject(&taskBar);
+    Game.AddObject(&taskBarButton);
+    Game.AddObject(&taskBarButtonCenter);
+    Game.AddObject(&taskBarButtonText);
+    Game.AddObject(&applicationMenu);
 
-	applicationMenu.color = 0xA9A9A9;
-	applicationMenu.active = false;
+    /* Background */
+    Rect wallpaper(0, 0, window.dimensions.x, window.dimensions.y);
+    wallpaper.renderingPriority = -1;
+    wallpaper.color = 0x008080;
 
-	Game.AddObject(&taskBar);
-	Game.AddObject(&taskBarButton);
-	Game.AddObject(&taskBarButtonCenter);
-	Game.AddObject(&taskBarButtonText);
-	Game.AddObject(&applicationMenu);
+    Game.AddObject(&wallpaper);
 
-	/* Background */
-	Rect wallpaper(0, 0, window.dimensions.x, window.dimensions.y);
-	wallpaper.renderingPriority = -1;
-	wallpaper.color = 0x008080;
+    /* Resource monitor */
+    Rect resourceMonitorBorder = resourceMonitorBackground;
+    resourceMonitorBorder.x -= 4;
+    resourceMonitorBorder.y -= 4;
+    resourceMonitorBorder.w += 8;
+    resourceMonitorBorder.h += 8;
+    resourceMonitorBorder.color = 0x9E9E9E;
 
-	Game.AddObject(&wallpaper);
+    resourceMonitorBackground.color = 0x818181;
+    resourceMonitorBackground.renderingPriority = 1;
 
-	/* Resource monitor */
-	Rect resourceMonitorBorder = resourceMonitorBackground;
-	resourceMonitorBorder.x -= 4;
-	resourceMonitorBorder.y -= 4;
-	resourceMonitorBorder.w += 8;
-	resourceMonitorBorder.h += 8;
-	resourceMonitorBorder.color = 0x9E9E9E;
+    ramCounterText.renderingPriority = 2;
 
-	resourceMonitorBackground.color = 0x818181;
-	resourceMonitorBackground.renderingPriority = 1;
+    Game.AddObject(&resourceMonitorBorder);
+    Game.AddObject(&resourceMonitorBackground);
+    Game.AddObject(&ramCounterText);
 
-	ramCounterText.renderingPriority = 2;
+    bool ApplicationRunning = true;
+    while (ApplicationRunning)
+    {
+        timeStep.Start();
+        while (timeStep.Running())
+        {
+            /* Handle input stuff */
+            while (window.PollEvents())
+            {
+                window.EventTick(window.event, &ApplicationRunning);
+                interface.PollButtons(window);
 
-	Game.AddObject(&resourceMonitorBorder);
-	Game.AddObject(&resourceMonitorBackground);
-	Game.AddObject(&ramCounterText);
+                if (window.event.type == SDL_MOUSEBUTTONDOWN)
+                    Debug::Log(window.CursorPosition().toString());
+            }
 
-	bool ApplicationRunning = true;
-	while (ApplicationRunning)
-	{
-		timeStep.Start();
-		while (timeStep.Running())
-		{
-			/* Handle input stuff */
-			while (window.PollEvents())
-			{
-				window.EventTick(window.event, &ApplicationRunning);
-				interface.PollButtons(window);
+            timeStep.Step();
+        }
 
-				if (window.event.type == SDL_MOUSEBUTTONDOWN)
-					Debug::Log(window.CursorPosition().toString());
-			}
+        window.Clear();
+        /* Handle rendering */
 
-			timeStep.Step();
-		}
+        /* Render scenes */
+        MainMenu.Render();
+        Game.Render();
+        EndScreen.Render();
 
-		window.Clear();
-		/* Handle rendering */
+        /* End of rendering */
+        window.Display();
 
-		/* Render scenes */
-		MainMenu.Render();
-		Game.Render();
-		EndScreen.Render();
+        timeStep.End();
+    }
 
-		/* End of rendering */
-		window.Display();
-
-		timeStep.End();
-	}
-
-	return 0;
+    return 0;
 }
 
 void PlayGame()
 {
-	Debug::Log("Starting game");
-	MainMenu.Deactivate();
-	Game.Activate();
+    Debug::Log("Starting game");
+    MainMenu.Deactivate();
+    Game.Activate();
 }
 
 void ToggleApplicationMenu()
 {
-	applicationMenu.active = !applicationMenu.active;
+    applicationMenu.active = !applicationMenu.active;
 }
