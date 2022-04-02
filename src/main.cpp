@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv)
 {
-    Birb::TimeStep timeStep;
+    TimeStep timeStep;
     timeStep.Init(&window);
 
     /* Disable everything else but the main menu in the beginning */

@@ -1,5 +1,3 @@
-#pragma once
-
 #include <birb2d/Renderwindow.hpp>
 #include <birb2d/Entity.hpp>
 #include <birb2d/Font.hpp>
@@ -9,7 +7,14 @@
 using namespace Birb;
 
 /* Core variables */
-static Window window("Birb2D project template", Birb::Vector2int(1280, 720), 75, false);
+static int width = 1280;
+static int height = 720;
+
+#ifndef WINDOW_H
+#define WINDOW_H
+static Window window("Birb2D project template", Vector2int(width, height), 75, false);
+#endif
+
 static ApplicationInfo appInfo;
 
 /* Fonts */
@@ -39,10 +44,10 @@ static double CPUmax = 100;
 static double CPUusage = 0;
 
 /* Fonts and entities */
-static Rect taskBar(0, window.dimensions.y - 24, window.dimensions.x, 24);
-static Rect applicationMenu(0, 365, 200, window.dimensions.y - 365 - taskBar.h);
+static Rect taskBar(0, height - 24, width, 24);
+static Rect applicationMenu(0, 365, 200, height - 365 - taskBar.h);
 static Font taskBarButtonFont(mononoki_bold, 16);
-static Entity taskBarButtonText("Task bar button text", Vector2int(7, window.dimensions.y - 21), EntityComponent::Text("Start", &taskBarButtonFont, &Colors::Black));
+static Entity taskBarButtonText("Task bar button text", Vector2int(7, height - 21), EntityComponent::Text("Start", &taskBarButtonFont, &Colors::Black));
 
 /** Resource monitor **/
 static Font resourceMonitorFont(mononoki_regular, 18);
