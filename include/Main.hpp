@@ -34,6 +34,9 @@ static Font taskBarButtonFont(mononoki_bold, 16);
 static Entity taskBarButtonText("Task bar button text", Vector2int(7, height - 21), EntityComponent::Text("Start", &taskBarButtonFont, &Colors::Black));
 
 /** Resource monitor **/
+
+std::string CpuUsageText();
 static Font resourceMonitorFont(mononoki_regular, 18);
-static Rect resourceMonitorBackground(1050, 20, 210, 100);
-static Entity ramCounterText("Ram usage counter", Vector2int(resourceMonitorBackground.x + 5, resourceMonitorBackground.y + 5), EntityComponent::Text("Ram: " + std::to_string(ramUsage) + "mb / " + std::to_string(totalRam) + "mb", &resourceMonitorFont, &Colors::Black));
+static Rect resourceMonitorBackground(1050, 20, 210, 50);
+static Entity ramCounterText("RAM usage counter", Vector2int(resourceMonitorBackground.x + 5, resourceMonitorBackground.y + 5), EntityComponent::Text("Ram: " + std::to_string(ramUsage) + "mb / " + std::to_string(totalRam) + "mb", &resourceMonitorFont, &Colors::Black));
+static Entity cpuCounterText("CPU usage counter", Vector2int(resourceMonitorBackground.x + 5, resourceMonitorBackground.y + 25), EntityComponent::Text(CpuUsageText(), &resourceMonitorFont, &Colors::Black));
