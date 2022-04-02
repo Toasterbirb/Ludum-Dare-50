@@ -2,6 +2,7 @@
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
 #include "Main.hpp"
+#include "Window.hpp"
 
 int main(int argc, char **argv)
 {
@@ -11,15 +12,15 @@ int main(int argc, char **argv)
     /* Disable everything else but the main menu in the beginning */
     const int SCENE_COUNT = 3;
 
-    MainMenu.Activate();
-    Game.Deactivate();
-    EndScreen.Deactivate();
+    MainMenuScene.Activate();
+    GameScene.Deactivate();
+    EndScene.Deactivate();
 
     UI interface;
 
     /* Add some objects to the main menu */
-    MainMenu.AddObject(&titleText);
-    MainMenu.AddObject(&playButton);
+    MainMenuScene.AddObject(&titleText);
+    MainMenuScene.AddObject(&playButton);
     interface.AddButton(&playButton);
     playButton.clickComponent = EntityComponent::Click(PlayGame);
 
@@ -48,18 +49,18 @@ int main(int argc, char **argv)
     applicationMenu.color = 0xA9A9A9;
     applicationMenu.active = false;
 
-    Game.AddObject(&taskBar);
-    Game.AddObject(&taskBarButton);
-    Game.AddObject(&taskBarButtonCenter);
-    Game.AddObject(&taskBarButtonText);
-    Game.AddObject(&applicationMenu);
+    GameScene.AddObject(&taskBar);
+    GameScene.AddObject(&taskBarButton);
+    GameScene.AddObject(&taskBarButtonCenter);
+    GameScene.AddObject(&taskBarButtonText);
+    GameScene.AddObject(&applicationMenu);
 
     /* Background */
     Rect wallpaper(0, 0, window.dimensions.x, window.dimensions.y);
     wallpaper.renderingPriority = -1;
     wallpaper.color = 0x008080;
 
-    Game.AddObject(&wallpaper);
+    GameScene.AddObject(&wallpaper);
 
     /* Resource monitor */
     Rect resourceMonitorBorder = resourceMonitorBackground;
@@ -75,10 +76,12 @@ int main(int argc, char **argv)
     ramCounterText.renderingPriority = 2;
     cpuCounterText.renderingPriority = 2;
 
-    Game.AddObject(&resourceMonitorBorder);
-    Game.AddObject(&resourceMonitorBackground);
-    Game.AddObject(&ramCounterText);
-    Game.AddObject(&cpuCounterText);
+    GameScene.AddObject(&resourceMonitorBorder);
+    GameScene.AddObject(&resourceMonitorBackground);
+    GameScene.AddObject(&ramCounterText);
+    GameScene.AddObject(&cpuCounterText);
+
+    Game::Window adWindow(&adWindowOpts);
 
     bool ApplicationRunning = true;
     while (ApplicationRunning)
@@ -103,9 +106,12 @@ int main(int argc, char **argv)
         /* Handle rendering */
 
         /* Render scenes */
-        MainMenu.Render();
-        Game.Render();
-        EndScreen.Render();
+        MainMenuScene.Render();
+        GameScene.Render();
+        EndScene.Render();
+        if (GameScene.isActive()) {
+            adWindow.Render();
+        }
 
         /* End of rendering */
         window.Display();
@@ -119,8 +125,8 @@ int main(int argc, char **argv)
 void PlayGame()
 {
     Debug::Log("Starting game");
-    MainMenu.Deactivate();
-    Game.Activate();
+    MainMenuScene.Deactivate();
+    GameScene.Activate();
 }
 
 void ToggleApplicationMenu()
