@@ -1,7 +1,4 @@
-#include <birb2d/Renderwindow.hpp>
-#include <birb2d/Entity.hpp>
-#include <birb2d/Font.hpp>
-#include <birb2d/Scene.hpp>
+#pragma once
 #include <birb2d/Values.hpp>
 
 using namespace Birb;
