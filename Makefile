@@ -3,13 +3,14 @@ outputDir=./build
 CFLAGS=-O3
 WarningFlags=-Wpedantic -pedantic -Wall -Wextra
 SDL_FLAGS=-lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_gfx
+INCLUDES=-I./include
 
 APP="application"
 
 
 all: application
 
-application: main.o
+application: main.o game.o
 	mkdir -p build
 	cp -av ./res ./build/
 	$(CC) $^ -lbirb2d $(CFLAGS) $(SDL_FLAGS) $(WarningFlags) -o $(outputDir)/$(APP)
@@ -26,7 +27,7 @@ appimage-build:
 	cd $(outputDir) ; appimage-builder --skip-tests --recipe AppImageBuilder.yml
 
 %.o: ./src/%.cpp
-	$(CC) -c $^ $(CFLAGS)
+	$(CC) -c $(INCLUDES) $^ $(CFLAGS)
 
 clean:
 	rm -rf build
