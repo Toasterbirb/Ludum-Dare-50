@@ -4,18 +4,23 @@
 #include <birb2d/Entity.hpp>
 #include <birb2d/Font.hpp>
 #include <birb2d/Scene.hpp>
+#include "Window.hpp"
 #include "Variables.hpp"
 
 using namespace Birb;
 
 static Window window("Birb2D project template", Vector2int(width, height), 75, false);
+static Game::WindowOpts adWindowOpts(
+    "This is an advertisement",
+    Vector2int(300, 300)
+);
 
 /* Fonts */
 static Font TitleFont(mononoki_bold, 64);
 static Font MainMenuButtonFont(mononoki_bold, 32);
 
 /* Scenes */
-static Scene MainMenu, EndScreen, Game;
+static Scene MainMenuScene, EndScene, GameScene;
 
 /** Main menu **/
 void PlayGame();
