@@ -1,7 +1,6 @@
 #include <birb2d/Timestep.hpp>
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
-#include "Variables.hpp"
 #include "Main.hpp"
 
 int main(int argc, char **argv)
@@ -74,10 +73,12 @@ int main(int argc, char **argv)
     resourceMonitorBackground.renderingPriority = 1;
 
     ramCounterText.renderingPriority = 2;
+    cpuCounterText.renderingPriority = 2;
 
     Game.AddObject(&resourceMonitorBorder);
     Game.AddObject(&resourceMonitorBackground);
     Game.AddObject(&ramCounterText);
+    Game.AddObject(&cpuCounterText);
 
     bool ApplicationRunning = true;
     while (ApplicationRunning)
@@ -125,4 +126,12 @@ void PlayGame()
 void ToggleApplicationMenu()
 {
     applicationMenu.active = !applicationMenu.active;
+}
+
+std::string CpuUsageText()
+{
+	if (CPUusage <= 0)
+		return "CPU: 0%";
+	else
+		return "CPU: " + std::to_string(CPUusage / CPUmax) + "%";
 }
