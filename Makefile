@@ -10,7 +10,7 @@ APP="application"
 
 all: application
 
-application: main.o game.o
+application: main.o game.o window.o
 	mkdir -p build
 	cp -av ./res ./build/
 	$(CC) $^ -lbirb2d $(CFLAGS) $(SDL_FLAGS) $(WarningFlags) -o $(outputDir)/$(APP)
