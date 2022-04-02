@@ -1,6 +1,7 @@
 #include "Window.hpp"
 #include "Variables.hpp"
 #include <birb2d/Entity.hpp>
+#include <birb2d/Renderwindow.hpp>
 #include <birb2d/Scene.hpp>
 #include <birb2d/Rect.hpp>
 #include <birb2d/Values.hpp>
@@ -9,6 +10,11 @@
 namespace Game
 {
 	static int titleBarHeight = 20;
+	static void onCloseClick(Birb::Scene *scene)
+	{
+		scene->Clear();
+		scene->Deactivate();
+	}
 
 	WindowOpts::WindowOpts(std::string title, Birb::Vector2int dimensions): title(title), dimensions(dimensions){};
 
@@ -17,12 +23,16 @@ namespace Game
 		this->options = options;
 		this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
 		this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
-		windowBorder.color = Colors::LightGray; 
+		windowBorder.color = Colors::LightGray;
 		this->scene.AddObject(&window);
 		this->scene.AddObject(&windowBorder);
-		this->buildTitleBar();
-		this->scene.Activate();
 
+		this->buildTitleBar();
+
+		this->scene.Activate();
+	};
+
+	void Window::addLighting() {
 		/* Lighting (lines) */
 		lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
 		lightLineLeft.color = Colors::White;
@@ -48,7 +58,8 @@ namespace Game
 		scene.AddObject(&lightLineTop);
 		scene.AddObject(&shadowLineRight);
 		scene.AddObject(&shadowLineBottom);
-	};
+
+	}
 
 	void Window::buildTitleBar() {
 		// Create titleBar Rect
@@ -56,7 +67,13 @@ namespace Game
 		titleBar.color = 0x010081;
 		this->scene.AddObject(&titleBar);
 
-		// Create Entity for titleText to calculate size dynamically 
+		this->closeButton = Birb::Entity("closeButton", Birb::Rect(titleBar.x + (titleBar.w - 18), (titleBar.y + 3), 14, 14), closeButtonTexture);
+		std::function<void()> clickHandler = std::bind(onCloseClick, &this->scene);
+		this->closeButton.clickComponent = EntityComponent::Click(clickHandler);
+
+		this->scene.AddObject(&closeButton);
+
+		// Create Entity for titleText to calculate size dynamically
 		Birb::Vector2int centerPos(0, 0);
 		this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::White));
 
@@ -70,8 +87,13 @@ namespace Game
 		this->scene.AddObject(&titleText);
 	}
 
+	void Window::WireButtons(Birb::UI *interface) {
+		interface->AddButton(&this->closeButton);
+	}
+
 	void Window::Render()
 	{
 		this->scene.Render();
 	}
+
 };

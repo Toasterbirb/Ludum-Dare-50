@@ -82,6 +82,7 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&cpuCounterText);
 
 	Game::Window adWindow(&adWindowOpts);
+	adWindow.WireButtons(&interface);
 
 	bool ApplicationRunning = true;
 	while (ApplicationRunning)
