@@ -4,6 +4,7 @@
 #include <birb2d/Scene.hpp>
 #include <birb2d/Rect.hpp>
 #include <birb2d/Values.hpp>
+#include <birb2d/Line.hpp>
 
 namespace Game
 {
@@ -14,29 +15,45 @@ namespace Game
     Window::Window(WindowOpts *options)
     {
         this->options = options;
-        this->window = Birb::Rect(0, 0, this->options->dimensions.x, this->options->dimensions.y);
-        this->windowBorder = Birb::Rect(0, 0, this->options->dimensions.x, this->options->dimensions.y);
+        this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
+        this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
+		windowBorder.color = Colors::LightGray; 
         this->scene.AddObject(&window);
         this->scene.AddObject(&windowBorder);
         this->buildTitleBar();
         this->scene.Activate();
+
+		/* Lighting (lines) */
+		lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
+		lightLineLeft.color = Colors::White;
+		lightLineLeft.renderingPriority = 2;
+		lightLineLeft.thickness = 2;
+
+		shadowLineLeft = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
+		shadowLineLeft.color = Colors::Black;
+		shadowLineLeft.renderingPriority = 2;
+		shadowLineLeft.thickness = 2;
+
+		scene.AddObject(&lightLineLeft);
+		scene.AddObject(&shadowLineLeft);
+
     };
 
     void Window::buildTitleBar() {
         // Create titleBar Rect
-        this->titleBar = Birb::Rect(0, 0, this->options->dimensions.x, titleBarHeight);
-        titleBar.color = Birb::Colors::LightGray;
+        this->titleBar = Birb::Rect(window.x + 5, window.y + 5, this->options->dimensions.x - 10, titleBarHeight);
+        titleBar.color = 0x010081;
         this->scene.AddObject(&titleBar);
         
         // Create Entity for titleText to calculate size dynamically 
         Birb::Vector2int centerPos(0, 0);
-        this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::Black));
+        this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::White));
 
         // Position title text in center of titleBar
-        Birb::Vector2int textDimensions;
-        Birb::utils::GetTextureDimensions(titleText.sprite, textDimensions.x, textDimensions.y);
-        titleText.rect.x = (this->options->dimensions.x / 2.0) - (textDimensions.x / 2.0);
-        titleText.rect.y = (titleBarHeight / 2.0) - (textDimensions.y / 2.0);
+        Birb::Vector2int textDimensions = Birb::utils::GetTextureDimensions(titleText.sprite);
+		titleText.CenterRelativeTo(titleBar);
+        //titleText.rect.x = (this->options->dimensions.x / 2.0) - (textDimensions.x / 2.0);
+        //titleText.rect.y = (titleBarHeight / 2.0) - (textDimensions.y / 2.0);
 
         // Set rendering priority of text to be above titleBar
         titleText.renderingPriority = 1;
