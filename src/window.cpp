@@ -63,8 +63,6 @@ namespace Game
 		// Position title text in center of titleBar
 		Birb::Vector2int textDimensions = Birb::utils::GetTextureDimensions(titleText.sprite);
 		titleText.CenterRelativeTo(titleBar);
-		//titleText.rect.x = (this->options->dimensions.x / 2.0) - (textDimensions.x / 2.0);
-		//titleText.rect.y = (titleBarHeight / 2.0) - (textDimensions.y / 2.0);
 
 		// Set rendering priority of text to be above titleBar
 		titleText.renderingPriority = 1;
