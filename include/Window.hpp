@@ -21,8 +21,10 @@ namespace Game
         Birb::Rect window;
         Birb::Rect windowBorder;
         Birb::Entity titleText;
-		Birb::Line lightLineLeft;
-		Birb::Line shadowLineLeft;
+        Birb::Line lightLineLeft;
+        Birb::Line lightLineTop;
+        Birb::Line shadowLineRight;
+        Birb::Line shadowLineBottom;
         void buildTitleBar();
 
     public:

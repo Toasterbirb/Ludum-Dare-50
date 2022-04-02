@@ -24,19 +24,30 @@ namespace Game
         this->scene.Activate();
 
 		/* Lighting (lines) */
-		lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
-		lightLineLeft.color = Colors::White;
-		lightLineLeft.renderingPriority = 2;
-		lightLineLeft.thickness = 2;
+        lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
+        lightLineLeft.color = Colors::White;
+        lightLineLeft.renderingPriority = 2;
+        lightLineLeft.thickness = 2;
 
-		shadowLineLeft = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
-		shadowLineLeft.color = Colors::Black;
-		shadowLineLeft.renderingPriority = 2;
-		shadowLineLeft.thickness = 2;
+        lightLineTop = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x + window.w, window.y));
+        lightLineTop.color = Colors::White;
+        lightLineTop.renderingPriority = 2;
+        lightLineTop.thickness = 2;
 
-		scene.AddObject(&lightLineLeft);
-		scene.AddObject(&shadowLineLeft);
+        shadowLineRight = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
+        shadowLineRight.color = Colors::Black;
+        shadowLineRight.renderingPriority = 2;
+        shadowLineRight.thickness = 2;
 
+        shadowLineBottom = Birb::Line(Birb::Vector2f(window.x, window.y + window.h), Birb::Vector2f(window.x + window.w, window.y + window.h));
+        shadowLineBottom.color = Colors::Black;
+        shadowLineBottom.renderingPriority = 2;
+        shadowLineBottom.thickness = 2;
+
+        scene.AddObject(&lightLineLeft);
+        scene.AddObject(&lightLineTop);
+        scene.AddObject(&shadowLineRight);
+        scene.AddObject(&shadowLineBottom);
     };
 
     void Window::buildTitleBar() {
