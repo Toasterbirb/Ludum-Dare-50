@@ -8,72 +8,72 @@
 
 namespace Game
 {
-    static int titleBarHeight = 20;
+	static int titleBarHeight = 20;
 
-    WindowOpts::WindowOpts(std::string title, Birb::Vector2int dimensions): title(title), dimensions(dimensions){};
+	WindowOpts::WindowOpts(std::string title, Birb::Vector2int dimensions): title(title), dimensions(dimensions){};
 
-    Window::Window(WindowOpts *options)
-    {
-        this->options = options;
-        this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
-        this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
+	Window::Window(WindowOpts *options)
+	{
+		this->options = options;
+		this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
+		this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
 		windowBorder.color = Colors::LightGray; 
-        this->scene.AddObject(&window);
-        this->scene.AddObject(&windowBorder);
-        this->buildTitleBar();
-        this->scene.Activate();
+		this->scene.AddObject(&window);
+		this->scene.AddObject(&windowBorder);
+		this->buildTitleBar();
+		this->scene.Activate();
 
 		/* Lighting (lines) */
-        lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
-        lightLineLeft.color = Colors::White;
-        lightLineLeft.renderingPriority = 2;
-        lightLineLeft.thickness = 2;
+		lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
+		lightLineLeft.color = Colors::White;
+		lightLineLeft.renderingPriority = 2;
+		lightLineLeft.thickness = 2;
 
-        lightLineTop = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x + window.w, window.y));
-        lightLineTop.color = Colors::White;
-        lightLineTop.renderingPriority = 2;
-        lightLineTop.thickness = 2;
+		lightLineTop = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x + window.w, window.y));
+		lightLineTop.color = Colors::White;
+		lightLineTop.renderingPriority = 2;
+		lightLineTop.thickness = 2;
 
-        shadowLineRight = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
-        shadowLineRight.color = Colors::Black;
-        shadowLineRight.renderingPriority = 2;
-        shadowLineRight.thickness = 2;
+		shadowLineRight = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
+		shadowLineRight.color = Colors::Black;
+		shadowLineRight.renderingPriority = 2;
+		shadowLineRight.thickness = 2;
 
-        shadowLineBottom = Birb::Line(Birb::Vector2f(window.x, window.y + window.h), Birb::Vector2f(window.x + window.w, window.y + window.h));
-        shadowLineBottom.color = Colors::Black;
-        shadowLineBottom.renderingPriority = 2;
-        shadowLineBottom.thickness = 2;
+		shadowLineBottom = Birb::Line(Birb::Vector2f(window.x, window.y + window.h), Birb::Vector2f(window.x + window.w, window.y + window.h));
+		shadowLineBottom.color = Colors::Black;
+		shadowLineBottom.renderingPriority = 2;
+		shadowLineBottom.thickness = 2;
 
-        scene.AddObject(&lightLineLeft);
-        scene.AddObject(&lightLineTop);
-        scene.AddObject(&shadowLineRight);
-        scene.AddObject(&shadowLineBottom);
-    };
+		scene.AddObject(&lightLineLeft);
+		scene.AddObject(&lightLineTop);
+		scene.AddObject(&shadowLineRight);
+		scene.AddObject(&shadowLineBottom);
+	};
 
-    void Window::buildTitleBar() {
-        // Create titleBar Rect
-        this->titleBar = Birb::Rect(window.x + 5, window.y + 5, this->options->dimensions.x - 10, titleBarHeight);
-        titleBar.color = 0x010081;
-        this->scene.AddObject(&titleBar);
-        
-        // Create Entity for titleText to calculate size dynamically 
-        Birb::Vector2int centerPos(0, 0);
-        this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::White));
+	void Window::buildTitleBar() {
+		// Create titleBar Rect
+		this->titleBar = Birb::Rect(window.x + 5, window.y + 5, this->options->dimensions.x - 10, titleBarHeight);
+		titleBar.color = 0x010081;
+		this->scene.AddObject(&titleBar);
 
-        // Position title text in center of titleBar
-        Birb::Vector2int textDimensions = Birb::utils::GetTextureDimensions(titleText.sprite);
+		// Create Entity for titleText to calculate size dynamically 
+		Birb::Vector2int centerPos(0, 0);
+		this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::White));
+
+		// Position title text in center of titleBar
+		Birb::Vector2int textDimensions = Birb::utils::GetTextureDimensions(titleText.sprite);
 		titleText.CenterRelativeTo(titleBar);
-        //titleText.rect.x = (this->options->dimensions.x / 2.0) - (textDimensions.x / 2.0);
-        //titleText.rect.y = (titleBarHeight / 2.0) - (textDimensions.y / 2.0);
+		//titleText.rect.x = (this->options->dimensions.x / 2.0) - (textDimensions.x / 2.0);
+		//titleText.rect.y = (titleBarHeight / 2.0) - (textDimensions.y / 2.0);
 
-        // Set rendering priority of text to be above titleBar
-        titleText.renderingPriority = 1;
+		// Set rendering priority of text to be above titleBar
+		titleText.renderingPriority = 1;
 
-        this->scene.AddObject(&titleText);
-    }
+		this->scene.AddObject(&titleText);
+	}
 
-    void Window::Render()
-    {
-        this->scene.Render();
-    }
+	void Window::Render()
+	{
+		this->scene.Render();
+	}
 };
