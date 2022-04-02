@@ -28,6 +28,7 @@ namespace Game
 		this->scene.AddObject(&windowBorder);
 
 		this->buildTitleBar();
+		this->addLighting();
 
 		this->scene.Activate();
 	};
@@ -37,22 +38,22 @@ namespace Game
 		lightLineLeft = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x, window.y + window.h));
 		lightLineLeft.color = Colors::White;
 		lightLineLeft.renderingPriority = 2;
-		lightLineLeft.thickness = 2;
+		lightLineLeft.thickness = 1;
 
 		lightLineTop = Birb::Line(Birb::Vector2f(window.x, window.y), Birb::Vector2f(window.x + window.w, window.y));
 		lightLineTop.color = Colors::White;
 		lightLineTop.renderingPriority = 2;
-		lightLineTop.thickness = 2;
+		lightLineTop.thickness = 1;
 
 		shadowLineRight = Birb::Line(Birb::Vector2f(window.x + window.w, window.y), Birb::Vector2f(window.x + window.w, window.y + window.h));
 		shadowLineRight.color = Colors::Black;
 		shadowLineRight.renderingPriority = 2;
-		shadowLineRight.thickness = 2;
+		shadowLineRight.thickness = 1;
 
 		shadowLineBottom = Birb::Line(Birb::Vector2f(window.x, window.y + window.h), Birb::Vector2f(window.x + window.w, window.y + window.h));
 		shadowLineBottom.color = Colors::Black;
 		shadowLineBottom.renderingPriority = 2;
-		shadowLineBottom.thickness = 2;
+		shadowLineBottom.thickness = 1;
 
 		scene.AddObject(&lightLineLeft);
 		scene.AddObject(&lightLineTop);
