@@ -82,6 +82,8 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&cpuCounterText);
 
 	Game::Window adWindow(&adWindowOpts);
+	Birb::Entity pogText = Birb::Entity("pogText", adWindow.GetContentWindowVector(), Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
+	adWindow.AddChildComponent(&pogText);
 	adWindow.WireButtons(&interface);
 
 	bool ApplicationRunning = true;
