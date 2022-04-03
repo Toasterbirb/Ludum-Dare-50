@@ -10,28 +10,39 @@
 namespace Game
 {
 	static int titleBarHeight = 20;
-	static void onCloseClick(Birb::Scene *scene)
+	static void onCloseClick(Game::Window *window)
 	{
 		ClickSound.play();
-		scene->Clear();
-		scene->Deactivate();
+		window->ClearScenes();
 	}
 
-	WindowOpts::WindowOpts(std::string title, Birb::Vector2int dimensions): title(title), dimensions(dimensions){};
+	WindowOpts::WindowOpts(std::string title, Birb::Rect window)
+		: title(title), window(window){};
 
 	Window::Window(WindowOpts *options)
 	{
 		this->options = options;
-		this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
-		this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
-		windowBorder.color = Colors::LightGray;
-		this->scene.AddObject(&window);
-		this->scene.AddObject(&windowBorder);
-
+		this->window = options->window;
+		window.color = Colors::LightGray;
+		this->windowScene.AddObject(&window);
 		this->buildTitleBar();
 		this->addLighting();
 
-		this->scene.Activate();
+		this->windowScene.Activate();
+
+		//this->contentWindow = options->window;
+
+		// Put contents of contentScene below titleBar
+		//
+		// translate (titleBarPadding, titleBarHeight + titleBarPadding);
+		// height -= titleBarHeight - (titleBarPadding * 2);
+		// width -= titleBarPadding * 2;
+		this->contentWindow.h = window.h - titleBarHeight - 10;
+		this->contentWindow.w = window.w - 10;
+		this->contentScene.AddObject(&contentWindow);
+		this->contentScene.Translate(Vector2f(options->window.x + 5, options->window.y + titleBarHeight + 5));
+		this->contentScene.Activate();
+		this->addLighting();
 	};
 
 	void Window::addLighting() {
@@ -56,24 +67,24 @@ namespace Game
 		shadowLineBottom.renderingPriority = 2;
 		shadowLineBottom.thickness = 1;
 
-		scene.AddObject(&lightLineLeft);
-		scene.AddObject(&lightLineTop);
-		scene.AddObject(&shadowLineRight);
-		scene.AddObject(&shadowLineBottom);
+		windowScene.AddObject(&lightLineLeft);
+		windowScene.AddObject(&lightLineTop);
+		windowScene.AddObject(&shadowLineRight);
+		windowScene.AddObject(&shadowLineBottom);
 
 	}
 
 	void Window::buildTitleBar() {
 		// Create titleBar Rect
-		this->titleBar = Birb::Rect(window.x + 5, window.y + 5, this->options->dimensions.x - 10, titleBarHeight);
+		this->titleBar = Birb::Rect(window.x + 5, window.y + 5, window.w - 10, titleBarHeight);
 		titleBar.color = 0x010081;
-		this->scene.AddObject(&titleBar);
+		this->windowScene.AddObject(&titleBar);
 
 		this->closeButton = Birb::Entity("closeButton", Birb::Rect(titleBar.x + (titleBar.w - 18), (titleBar.y + 3), 14, 14), closeButtonTexture);
-		std::function<void()> clickHandler = std::bind(onCloseClick, &this->scene);
+		std::function<void()> clickHandler = std::bind(onCloseClick, this);
 		this->closeButton.clickComponent = EntityComponent::Click(clickHandler);
 
-		this->scene.AddObject(&closeButton);
+		this->windowScene.AddObject(&closeButton);
 
 		// Create Entity for titleText to calculate size dynamically
 		Birb::Vector2int centerPos(0, 0);
@@ -86,16 +97,33 @@ namespace Game
 		// Set rendering priority of text to be above titleBar
 		titleText.renderingPriority = 1;
 
-		this->scene.AddObject(&titleText);
+		this->windowScene.AddObject(&titleText);
 	}
 
-	void Window::WireButtons(Birb::UI *interface) {
+	void Window::WireButtons(Birb::UI *interface)
+	{
 		interface->AddButton(&this->closeButton);
 	}
 
 	void Window::Render()
 	{
-		this->scene.Render();
+		this->windowScene.Render();
+		this->contentScene.Render();
 	}
 
+	void Window::ClearScenes()
+	{
+		this->windowScene.Clear();
+		this->windowScene.Deactivate();
+		this->contentScene.Clear();
+		this->contentScene.Deactivate();
+	}
+
+	void Window::AddChildComponent(Birb::Entity *entity) {
+		this->contentScene.AddObject(entity);
+	}
+
+	Vector2int Window::GetContentWindowVector() {
+		return Vector2int(contentWindow.x, contentWindow.y);
+	}
 };

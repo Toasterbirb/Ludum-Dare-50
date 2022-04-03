@@ -1,6 +1,6 @@
 CC=g++
 outputDir=./build
-CFLAGS=-O3
+CFLAGS=-O3 -g
 WarningFlags=-Wpedantic -pedantic -Wall -Wextra
 SDL_FLAGS=-lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_gfx
 INCLUDES=-I./include

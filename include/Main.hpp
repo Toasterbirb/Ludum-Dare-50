@@ -12,7 +12,7 @@ using namespace Birb;
 static Window window("Birb2D project template", Vector2int(width, height), 75, false);
 static Game::WindowOpts adWindowOpts(
 		"This is an advertisement",
-		Vector2int(300, 300)
+		Rect(100, 100, 300, 300)
 );
 
 /* Fonts */
