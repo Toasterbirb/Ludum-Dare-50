@@ -30,8 +30,6 @@ namespace Game
 
 		this->windowScene.Activate();
 
-		//this->contentWindow = options->window;
-
 		// Put contents of contentScene below titleBar
 		//
 		// translate (titleBarPadding, titleBarHeight + titleBarPadding);
@@ -40,7 +38,7 @@ namespace Game
 		this->contentWindow.h = window.h - titleBarHeight - 10;
 		this->contentWindow.w = window.w - 10;
 		this->contentScene.AddObject(&contentWindow);
-		this->contentScene.Translate(Vector2f(options->window.x + 5, options->window.y + titleBarHeight + 5));
+		this->contentScene.Translate({options->window.x + 5, options->window.y + titleBarHeight + 5});
 		this->contentScene.Activate();
 		this->addLighting();
 	};
