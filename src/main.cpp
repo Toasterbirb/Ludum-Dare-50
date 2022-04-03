@@ -47,6 +47,8 @@ int main(int argc, char **argv)
 
 	taskBarButtonText.renderingPriority = 3;
 
+	Entity playTimerIndicator("playTimeIndicator", Vector2int(window.dimensions.x - 200, (int)taskBarButton.y), EntityComponent::Text(PlayedTimeText(), &DefaultFont, &Colors::White, &Colors::DarkGray));
+
 	applicationMenu.color = 0xA9A9A9;
 	applicationMenu.active = false;
 
@@ -54,6 +56,7 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&taskBarButton);
 	GameScene.AddObject(&taskBarButtonCenter);
 	GameScene.AddObject(&taskBarButtonText);
+	GameScene.AddObject(&playTimerIndicator);
 	GameScene.AddObject(&applicationMenu);
 
 	/* Background */
@@ -111,6 +114,7 @@ int main(int argc, char **argv)
 			timeStep.Step();
 		}
 
+		playTimerIndicator.SetText(PlayedTimeText());
 		window.Clear();
 		/* Handle rendering */
 
@@ -134,6 +138,7 @@ int main(int argc, char **argv)
 void PlayGame()
 {
 	Debug::Log("Starting game");
+	playTimer.Start();
 	ClickSound.play();
 	MainMenuScene.Deactivate();
 	GameScene.Activate();
@@ -151,4 +156,9 @@ std::string CpuUsageText()
 		return "CPU: 0%";
 	else
 		return "CPU: " + std::to_string(CPUusage / CPUmax) + "%";
+}
+
+std::string PlayedTimeText()
+{
+	return "Time Played: " + playTimer.DigitalFormat();
 }

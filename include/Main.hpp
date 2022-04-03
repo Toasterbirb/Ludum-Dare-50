@@ -25,6 +25,10 @@ static Scene MainMenuScene, EndScene, GameScene;
 /** Main menu **/
 void PlayGame();
 
+/* Timers */
+static Timer playTimer;
+std::string PlayedTimeText();
+
 static Entity titleText("Title text", Vector2int(50, 50), EntityComponent::Text("Need for RAM: Crash incoming", &TitleFont, &Colors::White));
 static Entity playButton("Play button", Vector2int(50, 200), EntityComponent::Text("Play", &MainMenuButtonFont, &Colors::White, &Colors::DarkGray));
 
