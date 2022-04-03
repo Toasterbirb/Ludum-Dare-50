@@ -23,10 +23,8 @@ namespace Game
 	{
 		this->options = options;
 		this->window = Birb::Rect(10, 10, this->options->dimensions.x, this->options->dimensions.y);
-		this->windowBorder = Birb::Rect(window.x, window.y, this->options->dimensions.x, this->options->dimensions.y);
-		windowBorder.color = Colors::LightGray;
+		window.color = Birb::Colors::LightGray;
 		this->scene.AddObject(&window);
-		this->scene.AddObject(&windowBorder);
 
 		this->buildTitleBar();
 

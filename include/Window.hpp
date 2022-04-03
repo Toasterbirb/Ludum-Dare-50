@@ -23,7 +23,6 @@ namespace Game
 			Birb::Scene scene;
 			Birb::Rect titleBar;
 			Birb::Rect window;
-			Birb::Rect windowBorder;
 			Birb::Entity closeButton;
 			Birb::Entity titleText;
 			Birb::Line lightLineLeft;
