@@ -7,6 +7,8 @@
 #include <birb2d/Values.hpp>
 #include <birb2d/Line.hpp>
 
+static Window GameWindow;
+
 namespace Game
 {
 	static int titleBarHeight = 20;
@@ -14,6 +16,20 @@ namespace Game
 	{
 		ClickSound.play();
 		window->ClearScenes();
+	}
+
+	static void onTitleMouseDown(Game::Window *window, Birb::Window *gameWindow)
+	{
+		std::cout << "On title mouse down" << std::endl;
+		window->dragOffset = gameWindow->CursorPosition() - Vector2int(window->getWindow().x, window->getWindow().y);
+	}
+
+	static void onTitleDrag(Game::Window *window, Birb::Window *gameWindow)
+	{
+		std::cout << "On title mouse drag" << std::endl;
+		Vector2int newPosition = gameWindow->CursorPosition() - window->dragOffset;
+		window->getWindowScene()->SetPosition(gameWindow->CursorPosition().toFloat());
+		window->getContentScene()->SetPosition(gameWindow->CursorPosition().toFloat());
 	}
 
 	WindowOpts::WindowOpts(std::string title, Birb::Rect window)
@@ -80,7 +96,12 @@ namespace Game
 
 		this->closeButton = Birb::Entity("closeButton", Birb::Rect(titleBar.x + (titleBar.w - 18), (titleBar.y + 3), 14, 14), closeButtonTexture);
 		std::function<void()> clickHandler = std::bind(onCloseClick, this);
-		this->closeButton.clickComponent = EntityComponent::Click(clickHandler);
+		//std::function<void()> onMouseDownHandler = std::bind(onTitleMouseDown, this, &GameWindow);
+		//std::function<void()> dragHandler = std::bind(onTitleDrag, this, &GameWindow);
+		this->closeButton.clickComponent = EntityComponent::Click();
+		this->closeButton.clickComponent.onClick = clickHandler;
+		//this->closeButton.clickComponent.onDrag = dragHandler;
+		//this->closeButton.clickComponent.onMouseDown = onMouseDownHandler;
 
 		this->windowScene.AddObject(&closeButton);
 
@@ -123,5 +144,26 @@ namespace Game
 
 	Vector2int Window::GetContentWindowVector() {
 		return Vector2int(contentWindow.x, contentWindow.y);
+	}
+
+	Rect Window::getWindow() const
+	{
+		return window;
+	}
+
+	void Window::SetWindowPosition(const Vector2int& newPos)
+	{
+		window.x = newPos.x;
+		window.y = newPos.y;
+	}
+
+	Birb::Scene* Window::getWindowScene()
+	{
+		return &windowScene;
+	}
+
+	Birb::Scene* Window::getContentScene()
+	{
+		return &contentScene;
 	}
 };

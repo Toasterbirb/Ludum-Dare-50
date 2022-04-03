@@ -23,15 +23,22 @@ namespace Game
 			Birb::Rect titleBar;
 			Birb::Rect window;
 			Birb::Rect contentWindow;
-			Birb::Entity pogText;
+
+			/* Scenes */
 			Birb::Scene windowScene;
 			Birb::Scene contentScene;
-			Birb::Entity closeButton;
+
+			/* Entities */
+			Birb::Entity pogText;
 			Birb::Entity titleText;
+			Birb::Entity closeButton;
+
+			/* Lighting */
 			Birb::Line lightLineLeft;
 			Birb::Line lightLineTop;
 			Birb::Line shadowLineRight;
 			Birb::Line shadowLineBottom;
+
 			void buildTitleBar();
 			void addLighting();
 
@@ -42,5 +49,12 @@ namespace Game
 			void AddChildComponent(Birb::Entity *entity);
 			void WireButtons(Birb::UI *interface);
 			void Render();
+			Rect getWindow() const;
+			Birb::Scene* getWindowScene();
+			Birb::Scene* getContentScene();
+
+			/* Window dragging  */
+			Birb::Vector2int dragOffset;
+			void SetWindowPosition(const Vector2int& newPos);
 	};
 };

@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
 	TimeStep timeStep;
-	timeStep.Init(&window);
+	timeStep.Init(&GameWindow);
 
 	/* Disable everything else but the main menu in the beginning */
 	const int SCENE_COUNT = 3;
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	taskBarButtonEntity.clickComponent = EntityComponent::Click(ToggleApplicationMenu);
 
 	/* taskBarButtonEntity */
-	Rect taskBarButton(3, window.dimensions.y - 21, 100, 18);
+	Rect taskBarButton(3, GameWindow.dimensions.y - 21, 100, 18);
 	taskBarButton.color = 0xc3c3c3;
 	taskBarButton.renderingPriority = 1;
 
@@ -41,13 +41,13 @@ int main(int argc, char **argv)
 	interface.AddButton(&taskBarButtonEntity);
 
 	/* taskBarButtonCenter */
-	Rect taskBarButtonCenter(5, window.dimensions.y - 19, 96, 14);
+	Rect taskBarButtonCenter(5, GameWindow.dimensions.y - 19, 96, 14);
 	taskBarButtonCenter.color = 0xDCDCDC;
 	taskBarButtonCenter.renderingPriority = 2;
 
 	taskBarButtonText.renderingPriority = 3;
 
-	Entity playTimerIndicator("playTimeIndicator", Vector2int(window.dimensions.x - 200, (int)taskBarButton.y), EntityComponent::Text(PlayedTimeText(), &DefaultFont, &Colors::White, &Colors::DarkGray));
+	Entity playTimerIndicator("playTimeIndicator", Vector2int(GameWindow.dimensions.x - 200, (int)taskBarButton.y), EntityComponent::Text(PlayedTimeText(), &DefaultFont, &Colors::White, &Colors::DarkGray));
 
 	applicationMenu.color = 0xA9A9A9;
 	applicationMenu.active = false;
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&applicationMenu);
 
 	/* Background */
-	Rect wallpaper(0, 0, window.dimensions.x, window.dimensions.y);
+	Rect wallpaper(0, 0, GameWindow.dimensions.x, GameWindow.dimensions.y);
 	wallpaper.renderingPriority = -1;
 	wallpaper.color = 0x008080;
 
@@ -102,20 +102,20 @@ int main(int argc, char **argv)
 		while (timeStep.Running())
 		{
 			/* Handle input stuff */
-			while (window.PollEvents())
+			while (GameWindow.PollEvents())
 			{
-				window.EventTick(window.event, &ApplicationRunning);
-				interface.PollButtons(window);
+				GameWindow.EventTick(GameWindow.event, &ApplicationRunning);
+				interface.PollButtons(GameWindow);
 
-				if (window.event.type == SDL_MOUSEBUTTONDOWN)
-					Debug::Log(window.CursorPosition().toString());
+				if (GameWindow.event.type == SDL_MOUSEBUTTONDOWN)
+					Debug::Log(GameWindow.CursorPosition().toString());
 			}
 
 			timeStep.Step();
 		}
 
 		playTimerIndicator.SetText(PlayedTimeText());
-		window.Clear();
+		GameWindow.Clear();
 		/* Handle rendering */
 
 		/* Render scenes */
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 		}
 
 		/* End of rendering */
-		window.Display();
+		GameWindow.Display();
 
 		timeStep.End();
 	}
