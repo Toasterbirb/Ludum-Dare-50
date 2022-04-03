@@ -1,6 +1,7 @@
 #include <birb2d/Timestep.hpp>
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
+#include <birb2d/Vector.hpp>
 #include "Main.hpp"
 #include "Window.hpp"
 
@@ -82,8 +83,13 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&cpuCounterText);
 
 	Game::Window adWindow(&adWindowOpts);
-	Birb::Entity pogText = Birb::Entity("pogText", adWindow.GetContentWindowVector(), Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
+	Vector2int contentWindowVector = adWindow.GetContentWindowVector();
+	contentWindowVector.x += 20;
+	Birb::Entity pogText = Birb::Entity("pogText", contentWindowVector, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
+	contentWindowVector.y += 20;
+	Birb::Entity wowText = Birb::Entity("wowText", contentWindowVector, Birb::EntityComponent::Text("Wow", &DefaultFont, &Birb::Colors::Blue));
 	adWindow.AddChildComponent(&pogText);
+	adWindow.AddChildComponent(&wowText);
 	adWindow.WireButtons(&interface);
 
 	bool ApplicationRunning = true;

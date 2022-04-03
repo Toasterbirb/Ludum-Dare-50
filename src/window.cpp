@@ -39,6 +39,7 @@ namespace Game
 		this->contentWindow.h = window.h - titleBarHeight - 10;
 		this->contentWindow.w = window.w - 10;
 		this->contentScene.AddObject(&contentWindow);
+		this->contentScene.SetPosition(Vector2f(5, titleBarHeight + 5));
 		this->contentScene.Activate();
 		this->addLighting();
 	};
@@ -119,7 +120,6 @@ namespace Game
 
 	void Window::AddChildComponent(Birb::Entity *entity) {
 		this->contentScene.AddObject(entity);
-		this->contentScene.SetPosition(Vector2f(5, titleBarHeight + 5));
 	}
 
 	Vector2int Window::GetContentWindowVector() {
