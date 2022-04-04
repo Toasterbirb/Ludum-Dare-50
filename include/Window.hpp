@@ -2,12 +2,14 @@
 
 #include <birb2d/Scene.hpp>
 #include <birb2d/UI.hpp>
+#include <birb2d/Random.hpp>
 #include "Variables.hpp"
 #include <string>
 
 namespace Game
 {
-	static std::string closeButtonPath = appInfo.ResLocation + "/sprites/x_button.png";
+	static const std::string closeButtonPath = appInfo.ResLocation + "/sprites/x_button.png";
+	static const int closeButtonHoverSizeIncrease = 2;
 	static SDL_Texture *closeButtonTexture = Birb::Resources::LoadTexture(closeButtonPath);
 	static Audio::SoundFile ClickSound(click_sound_path);
 	struct WindowOpts
@@ -40,12 +42,14 @@ namespace Game
 			Birb::Line shadowLineRight;
 			Birb::Line shadowLineBottom;
 
+
 			void buildTitleBar();
 			void addLighting();
 
 		public:
-			Window(WindowOpts options);
+			Window(WindowOpts options, Random rand);
 			void ClearScenes();
+			void DisableScenes();
 			Vector2int GetContentWindowVector();
 			void AddChildComponent(Birb::Entity entity);
 			void WireButtons(Birb::UI *interface);
@@ -53,6 +57,10 @@ namespace Game
 			Rect getWindow() const;
 			Birb::Scene* getWindowScene();
 			Birb::Scene* getContentScene();
+			int windowRamUsage;
+			bool windowClosed;
+
+			Birb::Rect originalCloseButtonRect;
 
 			/* Window dragging  */
 			Birb::Vector2int dragOffset;

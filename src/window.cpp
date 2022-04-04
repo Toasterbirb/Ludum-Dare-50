@@ -15,14 +15,32 @@ namespace Game
 	static void onCloseClick(Game::Window *window)
 	{
 		ClickSound.play();
-		window->ClearScenes();
-		free(window);
+		//window->ClearScenes();
+		window->DisableScenes();
+		Variables::ramUsage -= window->windowRamUsage;
+		window->windowClosed = true;
 	}
 
-	static void onTitleMouseDown(Game::Window *window, Birb::Window *gameWindow)
+	void Window::DisableScenes()
 	{
-		std::cout << "On title mouse down" << std::endl;
-		window->dragOffset = gameWindow->CursorPosition() - Vector2int(window->getWindow().x, window->getWindow().y);
+		windowScene.Deactivate();
+		//contentScene.Deactivate();
+	}
+
+	static void onCloseMouseDown()
+	{
+		ClickSound.play();
+		//MouseDownSound.play();
+		//window->dragOffset = gameWindow->CursorPosition() - Vector2int(window->getWindow().x, window->getWindow().y);
+	}
+
+	static void onMouseHover(Entity* closeButton, const Game::Window& window)
+	{
+		int sizeIncrease = 4;
+		closeButton->rect.x = window.originalCloseButtonRect.x - closeButtonHoverSizeIncrease;
+		closeButton->rect.y = window.originalCloseButtonRect.y - closeButtonHoverSizeIncrease;
+		closeButton->rect.w = window.originalCloseButtonRect.w + closeButtonHoverSizeIncrease * 2;
+		closeButton->rect.h = window.originalCloseButtonRect.h + closeButtonHoverSizeIncrease * 2;
 	}
 
 	static void onTitleDrag(Game::Window *window, Birb::Window *gameWindow)
@@ -41,8 +59,13 @@ namespace Game
 	WindowOpts::WindowOpts(std::string title, Birb::Rect window)
 		: title(title), window(window){};
 
-	Window::Window(WindowOpts options)
+	Window::Window(WindowOpts options, Random rand)
 	{
+		windowRamUsage = rand.RandomInt(10, 250);
+		Variables::ramUsage += windowRamUsage;
+
+		windowClosed = false;
+
 		this->options = options;
 		this->window = options.window;
 		window.color = Colors::LightGray;
@@ -62,6 +85,7 @@ namespace Game
 		this->contentScene.AddObject(&contentWindow);
 		this->contentScene.Translate({options.window.x + 5, options.window.y + titleBarHeight + 5});
 		this->contentScene.Activate();
+		windowScene.AddObject(&contentScene);
 	};
 
 	void Window::addLighting() {
@@ -99,12 +123,15 @@ namespace Game
 		titleBar.color = 0x010081;
 		this->windowScene.AddObject(&titleBar);
 
-		this->closeButton = Birb::Entity("closeButton", Birb::Rect(titleBar.x + (titleBar.w - 18), (titleBar.y + 3), 14, 14), closeButtonTexture);
+		originalCloseButtonRect = Birb::Rect(titleBar.x + (titleBar.w - 18), (titleBar.y + 3), 14, 14);
+		this->closeButton = Birb::Entity("closeButton", originalCloseButtonRect, closeButtonTexture);
 		std::function<void()> clickHandler = std::bind(onCloseClick, this);
-		//std::function<void()> onMouseDownHandler = std::bind(onTitleMouseDown, this, &GameWindow);
+		//std::function<void()> onMouseDownHandler = std::bind(onCloseMouseDown);
 		//std::function<void()> dragHandler = std::bind(onTitleDrag, this, &GameWindow);
+		std::function<void()> mouseHoverHandler = std::bind(onMouseHover, &closeButton, *this);
 		this->closeButton.clickComponent = EntityComponent::Click();
 		this->closeButton.clickComponent.onClick = clickHandler;
+		this->closeButton.clickComponent.onHover = mouseHoverHandler;
 		//this->closeButton.clickComponent.onDrag = dragHandler;
 		//this->closeButton.clickComponent.onMouseDown = onMouseDownHandler;
 
@@ -133,7 +160,7 @@ namespace Game
 	void Window::Render()
 	{
 		this->windowScene.Render();
-		this->contentScene.Render();
+		//this->contentScene.Render();
 	}
 
 	void Window::ClearScenes()
