@@ -32,13 +32,18 @@ namespace Game
 		window->getContentScene()->SetPosition(gameWindow->CursorPosition().toFloat());
 	}
 
+	WindowOpts::WindowOpts()
+	{
+		title = "";
+	}
+
 	WindowOpts::WindowOpts(std::string title, Birb::Rect window)
 		: title(title), window(window){};
 
-	Window::Window(WindowOpts *options)
+	Window::Window(WindowOpts options)
 	{
 		this->options = options;
-		this->window = options->window;
+		this->window = options.window;
 		window.color = Colors::LightGray;
 		this->windowScene.AddObject(&window);
 		this->buildTitleBar();
@@ -54,7 +59,7 @@ namespace Game
 		this->contentWindow.h = window.h - titleBarHeight - 10;
 		this->contentWindow.w = window.w - 10;
 		this->contentScene.AddObject(&contentWindow);
-		this->contentScene.Translate({options->window.x + 5, options->window.y + titleBarHeight + 5});
+		this->contentScene.Translate({options.window.x + 5, options.window.y + titleBarHeight + 5});
 		this->contentScene.Activate();
 		this->addLighting();
 	};
@@ -105,9 +110,12 @@ namespace Game
 
 		this->windowScene.AddObject(&closeButton);
 
+
+		contentEntity = Birb::Entity("pogText", {0, 0}, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
+
 		// Create Entity for titleText to calculate size dynamically
 		Birb::Vector2int centerPos(0, 0);
-		this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options->title, &DefaultFont, &Birb::Colors::White));
+		this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options.title, &DefaultFont, &Birb::Colors::White));
 
 		// Position title text in center of titleBar
 		Birb::Vector2int textDimensions = Birb::utils::GetTextureDimensions(titleText.sprite);
@@ -138,8 +146,10 @@ namespace Game
 		this->contentScene.Deactivate();
 	}
 
-	void Window::AddChildComponent(Birb::Entity *entity) {
-		this->contentScene.AddObject(entity);
+	void Window::AddChildComponent(Birb::Entity entity) {
+		contentEntity = entity;
+		this->contentScene.Clear();
+		this->contentScene.AddObject(&contentEntity);
 	}
 
 	Vector2int Window::GetContentWindowVector() {

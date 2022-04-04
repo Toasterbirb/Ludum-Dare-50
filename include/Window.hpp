@@ -12,6 +12,7 @@ namespace Game
 	static Audio::SoundFile ClickSound(click_sound_path);
 	struct WindowOpts
 	{
+		WindowOpts();
 		WindowOpts(std::string title, Birb::Rect window);
 		std::string title;
 		Birb::Rect window;
@@ -19,7 +20,7 @@ namespace Game
 	class Window
 	{
 		private:
-			WindowOpts *options;
+			WindowOpts options;
 			Birb::Rect titleBar;
 			Birb::Rect window;
 			Birb::Rect contentWindow;
@@ -29,9 +30,9 @@ namespace Game
 			Birb::Scene contentScene;
 
 			/* Entities */
-			Birb::Entity pogText;
 			Birb::Entity titleText;
 			Birb::Entity closeButton;
+			Birb::Entity contentEntity;
 
 			/* Lighting */
 			Birb::Line lightLineLeft;
@@ -43,10 +44,10 @@ namespace Game
 			void addLighting();
 
 		public:
-			Window(WindowOpts *options);
+			Window(WindowOpts options);
 			void ClearScenes();
 			Vector2int GetContentWindowVector();
-			void AddChildComponent(Birb::Entity *entity);
+			void AddChildComponent(Birb::Entity entity);
 			void WireButtons(Birb::UI *interface);
 			void Render();
 			Rect getWindow() const;

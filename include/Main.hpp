@@ -10,10 +10,6 @@
 using namespace Birb;
 
 static Window GameWindow("Birb2D project template", Vector2int(width, height), 75, false);
-static Game::WindowOpts adWindowOpts(
-		"This is an advertisement",
-		Rect(100, 100, 300, 300)
-);
 
 /* Fonts */
 static Font TitleFont(mononoki_bold, 64);

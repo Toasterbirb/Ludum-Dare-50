@@ -2,8 +2,10 @@
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
 #include <birb2d/Vector.hpp>
+#include <birb2d/Random.hpp>
 #include "Main.hpp"
-#include "Window.hpp"
+#include "Windowmanager.hpp"
+#include <birb2d/Diagnostics.hpp>
 
 int main(int argc, char **argv)
 {
@@ -85,15 +87,26 @@ int main(int argc, char **argv)
 	GameScene.AddObject(&ramCounterText);
 	GameScene.AddObject(&cpuCounterText);
 
-	Game::Window adWindow(&adWindowOpts);
+	Game::WindowManager winManager(&interface);
+	for (int i = 0; i < 10; i++)
+		winManager.SpawnWindow("LOL");
+
+	Random rand;
+	Game::WindowOpts adWindowOpts(
+		"TEST",
+		Rect(rand.RandomInt(0, 900), rand.RandomInt(0, 570), rand.RandomInt(200, 320), rand.RandomInt(150, 320))
+	);
+
+	Game::Window adWindow(adWindowOpts);
 	Vector2int contentWindowVector = Vector2int(0, 0);
 	contentWindowVector.x += 0;
 	Birb::Entity pogText = Birb::Entity("pogText", contentWindowVector, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
 	contentWindowVector.y += 20;
 	Birb::Entity wowText = Birb::Entity("wowText", contentWindowVector, Birb::EntityComponent::Text("Wow", &DefaultFont, &Birb::Colors::Blue));
-	adWindow.AddChildComponent(&pogText);
-	adWindow.AddChildComponent(&wowText);
+	adWindow.AddChildComponent(pogText);
+	adWindow.AddChildComponent(wowText);
 	adWindow.WireButtons(&interface);
+	
 
 	bool ApplicationRunning = true;
 	while (ApplicationRunning)
@@ -123,6 +136,7 @@ int main(int argc, char **argv)
 		GameScene.Render();
 		EndScene.Render();
 		if (GameScene.isActive()) {
+			//winManager.RenderWindows();
 			adWindow.Render();
 		}
 
