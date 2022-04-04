@@ -10,7 +10,7 @@ using namespace Birb;
 static int width = 1280;
 static int height = 720;
 
-static ApplicationInfo appInfo("LD50.exe");
+static ApplicationInfo appInfo("application");
 
 static std::string click_sound_path = appInfo.ResLocation + "/sounds/click.wav";
 static Audio::SoundFile ClickSound(click_sound_path);
