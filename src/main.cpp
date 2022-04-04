@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	adWindow.AddChildComponent(pogText);
 	adWindow.AddChildComponent(wowText);
 	adWindow.WireButtons(&interface);
-	
+
 
 	bool ApplicationRunning = true;
 	while (ApplicationRunning)
@@ -136,8 +136,8 @@ int main(int argc, char **argv)
 		GameScene.Render();
 		EndScene.Render();
 		if (GameScene.isActive()) {
-			//winManager.RenderWindows();
-			adWindow.Render();
+			winManager.RenderWindows();
+			//adWindow.Render();
 		}
 
 		/* End of rendering */

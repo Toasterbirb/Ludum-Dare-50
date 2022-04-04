@@ -16,6 +16,7 @@ namespace Game
 	{
 		ClickSound.play();
 		window->ClearScenes();
+		free(window);
 	}
 
 	static void onTitleMouseDown(Game::Window *window, Birb::Window *gameWindow)
@@ -61,7 +62,6 @@ namespace Game
 		this->contentScene.AddObject(&contentWindow);
 		this->contentScene.Translate({options.window.x + 5, options.window.y + titleBarHeight + 5});
 		this->contentScene.Activate();
-		this->addLighting();
 	};
 
 	void Window::addLighting() {
@@ -111,8 +111,6 @@ namespace Game
 		this->windowScene.AddObject(&closeButton);
 
 
-		contentEntity = Birb::Entity("pogText", {0, 0}, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
-
 		// Create Entity for titleText to calculate size dynamically
 		Birb::Vector2int centerPos(0, 0);
 		this->titleText = Birb::Entity("titleBarTitleText", centerPos, Birb::EntityComponent::Text(this->options.title, &DefaultFont, &Birb::Colors::White));
@@ -147,9 +145,8 @@ namespace Game
 	}
 
 	void Window::AddChildComponent(Birb::Entity entity) {
-		contentEntity = entity;
-		this->contentScene.Clear();
-		this->contentScene.AddObject(&contentEntity);
+		contentEntities.push_back(entity);
+		this->contentScene.AddObject(&contentEntities.back());
 	}
 
 	Vector2int Window::GetContentWindowVector() {

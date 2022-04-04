@@ -15,7 +15,7 @@ namespace Game
 		void RenderWindows();
 
 	private:
-		std::vector<Game::Window> windows;
+		std::vector<Game::Window*> windows;
 		UI* interface;
 		Random rand;
 	};

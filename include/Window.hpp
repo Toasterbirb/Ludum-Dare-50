@@ -32,7 +32,7 @@ namespace Game
 			/* Entities */
 			Birb::Entity titleText;
 			Birb::Entity closeButton;
-			Birb::Entity contentEntity;
+			std::vector<Birb::Entity> contentEntities;
 
 			/* Lighting */
 			Birb::Line lightLineLeft;

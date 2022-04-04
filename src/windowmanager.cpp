@@ -14,15 +14,15 @@ namespace Game
 			Rect(rand.RandomInt(0, 900), rand.RandomInt(0, 570), rand.RandomInt(200, 320), rand.RandomInt(150, 320))
 		);
 
-		Game::Window adWindow(adWindowOpts);
+		Game::Window *adWindow = new Window(adWindowOpts);
 		Vector2int contentWindowVector = Vector2int(0, 0);
 		contentWindowVector.x += 0;
 		Birb::Entity pogText = Birb::Entity("pogText", contentWindowVector, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
 		contentWindowVector.y += 20;
-		//Birb::Entity wowText = Birb::Entity("wowText", contentWindowVector, Birb::EntityComponent::Text("Wow", &DefaultFont, &Birb::Colors::Blue));
-		adWindow.AddChildComponent(pogText);
-		//adWindow.AddChildComponent(wowText);
-		adWindow.WireButtons(interface);
+		Birb::Entity wowText = Birb::Entity("wowText", contentWindowVector, Birb::EntityComponent::Text("Wow", &DefaultFont, &Birb::Colors::Blue));
+		adWindow->AddChildComponent(pogText);
+		// adWindow->AddChildComponent(wowText);
+		adWindow->WireButtons(interface);
 
 		windows.push_back(adWindow);
 	}
@@ -31,7 +31,7 @@ namespace Game
 	{
 		for (int i = 0; i < windows.size(); i++)
 		{
-			windows[i].Render();
+			windows[i]->Render();
 		}
 	}
 }
