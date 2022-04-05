@@ -38,6 +38,7 @@ static Entity quitButton("Quit button", Vector2int(50, GameWindow.dimensions.y -
 /** Game **/
 /* Functions */
 void ToggleApplicationMenu();
+static Rect wallpaper;
 
 /* Fonts and entities */
 void DownloadRam();

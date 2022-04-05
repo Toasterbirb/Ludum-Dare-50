@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
 
 	/* Background */
-	Rect wallpaper(0, 0, GameWindow.dimensions.x, GameWindow.dimensions.y);
+	wallpaper = Rect(0, 0, GameWindow.dimensions.x, GameWindow.dimensions.y);
 	wallpaper.renderingPriority = -1;
 	wallpaper.color = 0x008080;
 
@@ -312,6 +312,12 @@ std::string PlayedTimeText()
 
 void UpdateResourceMonitor()
 {
+	float interpolation = 0;
+	if (Variables::ramUsage != 0)
+		interpolation = ((float)Variables::ramUsage / (float)Variables::totalRam);
+	wallpaper.color.r = Math::Lerp(0, 128, interpolation);
+	wallpaper.color.g = Math::Lerp(128, 0, interpolation);
+	wallpaper.color.b = Math::Lerp(128, 0, interpolation);
 	ramCounterText.SetText("Ram: " + std::to_string(Variables::ramUsage) + "mb / " + std::to_string(Variables::totalRam) + "mb");
 	//cpuCounterText.SetText(CpuUsageText());
 }
