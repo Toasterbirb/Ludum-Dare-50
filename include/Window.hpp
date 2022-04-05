@@ -10,7 +10,6 @@ namespace Game
 {
 	static const std::string closeButtonPath = appInfo.ResLocation + "/sprites/x_button.png";
 	static const int closeButtonHoverSizeIncrease = 2;
-	static SDL_Texture *closeButtonTexture = Birb::Resources::LoadTexture(closeButtonPath);
 	static Audio::SoundFile ClickSound(click_sound_path);
 	struct WindowOpts
 	{
@@ -42,6 +41,8 @@ namespace Game
 			Birb::Line shadowLineRight;
 			Birb::Line shadowLineBottom;
 
+			/* Textures */
+			SDL_Texture *closeButtonTexture;
 
 			void buildTitleBar();
 			void addLighting();

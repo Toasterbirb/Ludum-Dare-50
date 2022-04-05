@@ -61,6 +61,8 @@ namespace Game
 
 	Window::Window(WindowOpts options, Random rand)
 	{
+		closeButtonTexture = Birb::Resources::LoadTexture(closeButtonPath);
+
 		windowRamUsage = rand.RandomInt(10, 250);
 		Variables::ramUsage += windowRamUsage;
 
