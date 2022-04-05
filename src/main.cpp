@@ -2,13 +2,17 @@
 #include <birb2d/Logger.hpp>
 #include <birb2d/UI.hpp>
 #include <birb2d/Vector.hpp>
+#include <birb2d/Random.hpp>
 #include "Main.hpp"
-#include "Window.hpp"
+#include "Windowmanager.hpp"
+#include <birb2d/Diagnostics.hpp>
+
 
 int main(int argc, char **argv)
 {
 	TimeStep timeStep;
-	timeStep.Init(&window);
+	timeStep.Init(&GameWindow);
+	bool ApplicationRunning = true;
 
 	/* Disable everything else but the main menu in the beginning */
 	const int SCENE_COUNT = 3;
@@ -20,20 +24,39 @@ int main(int argc, char **argv)
 	UI interface;
 
 	/* Add some objects to the main menu */
+	SDL_Texture* mainMenuBackground = Resources::LoadTexture(appInfo.ResLocation + "/sprites/main_menu.png");
+	Entity mainMenuBackgroundEntity("Ḿain menu background entity", Rect(0, 0, 1280, 720), mainMenuBackground);
+	MainMenuScene.AddObject(&mainMenuBackgroundEntity);
 	MainMenuScene.AddObject(&titleText);
 	MainMenuScene.AddObject(&playButton);
+	MainMenuScene.AddObject(&quitButton);
 	interface.AddButton(&playButton);
+	interface.AddButton(&quitButton);
 	playButton.clickComponent = EntityComponent::Click(PlayGame);
+
+	std::function<void()> quitHandler = std::bind(QuitGame, &ApplicationRunning);
+	quitButton.clickComponent = EntityComponent::Click(quitHandler);
+
+	/* Add some objects to the end scene */
+	Rect blueScreenBackground(0, 0, 1280, 720, 0x000082);
+	Entity blueScreenTitle("Bluescreen title", Vector2int(50, 50), EntityComponent::Text("Game over!", &bluescreenFontBig, &Colors::White));
+	Entity blueScreenText("Bluescreen text", Vector2int(55, 140), EntityComponent::Text("", &bluescreenFontNormal, &Colors::White));
+	Entity blueScreenContinue("Bluescreen continue", Vector2int(55, 140), EntityComponent::Text("Hit SPACE to reboot", &bluescreenFontNormal, &Colors::White));
+	blueScreenContinue.CenterRelativeTo(Rect(0, 400, 1280, 320));
+	EndScene.AddObject(&blueScreenBackground);
+	EndScene.AddObject(&blueScreenTitle);
+	EndScene.AddObject(&blueScreenText);
+	EndScene.AddObject(&blueScreenContinue);
 
 	/* Game variables */
 	taskBar.color = 0x818181;
 
 	/* Taskbar */
-	Entity taskBarButtonEntity("Taskbar button");
 	taskBarButtonEntity.clickComponent = EntityComponent::Click(ToggleApplicationMenu);
+	taskBarButtonEntity.clickComponent.active = false;
 
 	/* taskBarButtonEntity */
-	Rect taskBarButton(3, window.dimensions.y - 21, 100, 18);
+	Rect taskBarButton(3, GameWindow.dimensions.y - 21, 100, 18);
 	taskBarButton.color = 0xc3c3c3;
 	taskBarButton.renderingPriority = 1;
 
@@ -41,26 +64,64 @@ int main(int argc, char **argv)
 	interface.AddButton(&taskBarButtonEntity);
 
 	/* taskBarButtonCenter */
-	Rect taskBarButtonCenter(5, window.dimensions.y - 19, 96, 14);
+	Rect taskBarButtonCenter(5, GameWindow.dimensions.y - 19, 96, 14);
 	taskBarButtonCenter.color = 0xDCDCDC;
 	taskBarButtonCenter.renderingPriority = 2;
 
 	taskBarButtonText.renderingPriority = 3;
 
-	Entity playTimerIndicator("playTimeIndicator", Vector2int(window.dimensions.x - 200, (int)taskBarButton.y), EntityComponent::Text(PlayedTimeText(), &DefaultFont, &Colors::White, &Colors::DarkGray));
+	Entity playTimerIndicator("playTimeIndicator", Vector2int(GameWindow.dimensions.x - 200, (int)taskBarButton.y), EntityComponent::Text(PlayedTimeText(), &DefaultFont, &Colors::White, &Colors::DarkGray));
 
-	applicationMenu.color = 0xA9A9A9;
-	applicationMenu.active = false;
 
 	GameScene.AddObject(&taskBar);
 	GameScene.AddObject(&taskBarButton);
 	GameScene.AddObject(&taskBarButtonCenter);
 	GameScene.AddObject(&taskBarButtonText);
 	GameScene.AddObject(&playTimerIndicator);
+
+	/* Taskbar menu ram downloader */
+	applicationMenu.renderingPriority = 3;
+	applicationMenu.color = 0xA9A9A9;
+	applicationMenu.active = false;
 	GameScene.AddObject(&applicationMenu);
 
+	ramDownloaderBackground.active = false;
+	ramDownloaderBackground.renderingPriority = 4;
+	ramDownloaderBackground.color = 0xCAECCD;
+	GameScene.AddObject(&ramDownloaderBackground);
+
+	ramDownloadButton.active = false;
+	ramDownloadButton.clickComponent = EntityComponent::Click(DownloadRam);
+	GameScene.AddObject(&ramDownloadButton);
+	interface.AddButton(&ramDownloadButton);
+
+	ramDownloaderText.renderingPriority = 5;
+	ramDownloaderText.active = false;
+	ramDownloaderText.CenterRelativeTo(ramDownloaderBackground);
+	GameScene.AddObject(&ramDownloaderText);
+
+	ramDownloadProgress.active = false;
+	ramDownloadProgress.rect = Rect(ramDownloaderBackground.x, ramDownloaderBackground.y + ramDownloaderBackground.h + 10, ramDownloaderBackground.w, 15);
+	ramDownloadProgress.progressBarComponent = EntityComponent::ProgressBar(2, &Colors::White, &Colors::DarkGray, &Colors::Green);
+	ramDownloadProgress.renderingPriority = 6;
+	ramDownloadProgress.progressBarComponent.minValue = 0;
+	ramDownloadProgress.progressBarComponent.maxValue = 100;
+	ramDownloadProgress.progressBarComponent.value = 45;
+	GameScene.AddObject(&ramDownloadProgress);
+
+	applicationMenuRightShadowLine.color = Colors::Black;
+	applicationMenuRightShadowLine.renderingPriority = 5;
+	applicationMenuRightShadowLine.active = false;
+	GameScene.AddObject(&applicationMenuRightShadowLine);
+
+	applicationMenuRightLightLine.color = Colors::White;
+	applicationMenuRightLightLine.renderingPriority = 5;
+	applicationMenuRightLightLine.active = false;
+	GameScene.AddObject(&applicationMenuRightLightLine);
+
+
 	/* Background */
-	Rect wallpaper(0, 0, window.dimensions.x, window.dimensions.y);
+	Rect wallpaper(0, 0, GameWindow.dimensions.x, GameWindow.dimensions.y);
 	wallpaper.renderingPriority = -1;
 	wallpaper.color = 0x008080;
 
@@ -78,56 +139,113 @@ int main(int argc, char **argv)
 	resourceMonitorBackground.renderingPriority = 1;
 
 	ramCounterText.renderingPriority = 2;
-	cpuCounterText.renderingPriority = 2;
+	//cpuCounterText.renderingPriority = 2;
 
 	GameScene.AddObject(&resourceMonitorBorder);
 	GameScene.AddObject(&resourceMonitorBackground);
 	GameScene.AddObject(&ramCounterText);
-	GameScene.AddObject(&cpuCounterText);
+	//GameScene.AddObject(&cpuCounterText);
 
-	Game::Window adWindow(&adWindowOpts);
-	Vector2int contentWindowVector = Vector2int(0, 0);
-	contentWindowVector.x += 0;
-	Birb::Entity pogText = Birb::Entity("pogText", contentWindowVector, Birb::EntityComponent::Text("POG", &DefaultFont, &Birb::Colors::Blue));
-	contentWindowVector.y += 20;
-	Birb::Entity wowText = Birb::Entity("wowText", contentWindowVector, Birb::EntityComponent::Text("Wow", &DefaultFont, &Birb::Colors::Blue));
-	adWindow.AddChildComponent(&pogText);
-	adWindow.AddChildComponent(&wowText);
-	adWindow.WireButtons(&interface);
+	Random rand;
+	Game::WindowManager winManager(&interface);
+	timeUntilNextWindow = rand.RandomFloat(0.5, 3);
 
-	bool ApplicationRunning = true;
+	
 	while (ApplicationRunning)
 	{
 		timeStep.Start();
 		while (timeStep.Running())
 		{
 			/* Handle input stuff */
-			while (window.PollEvents())
+			while (GameWindow.PollEvents())
 			{
-				window.EventTick(window.event, &ApplicationRunning);
-				interface.PollButtons(window);
+				GameWindow.EventTick(GameWindow.event, &ApplicationRunning);
+				interface.PollButtons(GameWindow);
 
-				if (window.event.type == SDL_MOUSEBUTTONDOWN)
-					Debug::Log(window.CursorPosition().toString());
+				/* Check if we are in the end scene */
+				if (EndScene.isActive())
+				{
+					/* Check for spacebar click */
+					if (GameWindow.event.type == SDL_KEYDOWN && GameWindow.event.key.keysym.sym == SDLK_SPACE)
+					{
+						Variables::totalRam = 1024;
+						taskBarButtonEntity.clickComponent.active = true;
+						GameScene.Activate();
+						EndScene.Deactivate();
+						playTimer.Start();
+					}
+				}
 			}
 
 			timeStep.Step();
 		}
 
-		playTimerIndicator.SetText(PlayedTimeText());
-		window.Clear();
-		/* Handle rendering */
+		if (GameScene.isActive())
+		{
+			if (Variables::ramUsage > Variables::totalRam)
+			{
+				winManager.ClearWindows();
+				Variables::ramUsage = 0;
+				GameScene.Deactivate();
+				playTimer.Stop();
+				taskBarButtonEntity.clickComponent.active = false;
+
+				blueScreenText.SetText("Your PC ran out of RAM.\nYou managed to keep it alive for " + playTimer.DigitalFormat());
+
+				EndScene.Activate();
+			}
+			else
+			{
+				/* Ram downloading */
+				if (downloadingRam)
+				{
+					ramDownloaded += timeStep.deltaTime * 200;
+
+					if (ramDownloaded > ramDownloadSize)
+					{
+						Variables::totalRam += ramDownloadSize;
+						ramDownloadProgress.active = false;
+						downloadingRam = false;
+						RamUpgrade.play();
+					}
+					else if (ramDownloaded % 32 == 0)
+					{
+						ramDownloadProgress.progressBarComponent.value = ramDownloaded;
+					}
+				}
+				/* --------------- */
+
+				playTimerIndicator.SetText(PlayedTimeText());
+				UpdateResourceMonitor();
+			}
+		}
+		
+		GameWindow.Clear();
+		/** Handle rendering **/
 
 		/* Render scenes */
 		MainMenuScene.Render();
 		GameScene.Render();
 		EndScene.Render();
-		if (GameScene.isActive()) {
-			adWindow.Render();
+		if (GameScene.isActive())
+		{
+			if (windowSpawnTimer.ElapsedSeconds() > timeUntilNextWindow)
+			{
+				windowSpawnTimer.Start();
+				timeUntilNextWindow = rand.RandomFloat(0.1, 5.0 - (playTimer.ElapsedSeconds() * 0.05));
+				timeUntilNextWindow = Math::Clamp(timeUntilNextWindow, 0.1, 5.0);
+
+				/* Spawn a new window */
+				 winManager.SpawnWindow(rand);
+				 PopupSound.play();
+			}
+
+			winManager.RenderWindows();
+			//adWindow.Render();
 		}
 
-		/* End of rendering */
-		window.Display();
+		/** End of rendering **/
+		GameWindow.Display();
 
 		timeStep.End();
 	}
@@ -142,23 +260,58 @@ void PlayGame()
 	ClickSound.play();
 	MainMenuScene.Deactivate();
 	GameScene.Activate();
+	windowSpawnTimer.Start();
+	taskBarButtonEntity.clickComponent.active = true;
+}
+
+void QuitGame(bool* ApplicationRunning)
+{
+	*ApplicationRunning = false;
 }
 
 void ToggleApplicationMenu()
 {
 	ClickSound.play();
 	applicationMenu.active = !applicationMenu.active;
+	ramDownloaderBackground.active = !ramDownloaderBackground.active;
+	ramDownloaderText.active = !ramDownloaderText.active;
+	ramDownloadButton.active = !ramDownloadButton.active;
+	applicationMenuRightShadowLine.active = !applicationMenuRightShadowLine.active;
+	applicationMenuRightLightLine.active = !applicationMenuRightLightLine.active;
+
+	if (!downloadingRam)
+		ramDownloadProgress.active = false;
+	else
+		ramDownloadProgress.active = applicationMenu.active;
+}
+
+void DownloadRam()
+{
+	downloadingRam = true;
+	ramDownloadProgress.progressBarComponent.value = 0;
+
+	ramDownloaded = 0;
+
+	ramDownloadProgress.progressBarComponent.maxValue = ramDownloadSize;
+	ramDownloadProgress.active = true;
 }
 
 std::string CpuUsageText()
 {
-	if (CPUusage <= 0)
+	if (Variables::CPUusage <= 0)
 		return "CPU: 0%";
 	else
-		return "CPU: " + std::to_string(CPUusage / CPUmax) + "%";
+		//return "CPU: " + std::to_string(Variables::CPUusage) + "%";
+		return "CPU: " + std::to_string(Variables::CPUusage / Variables::CPUmax) + "%";
 }
 
 std::string PlayedTimeText()
 {
 	return "Time Played: " + playTimer.DigitalFormat();
+}
+
+void UpdateResourceMonitor()
+{
+	ramCounterText.SetText("Ram: " + std::to_string(Variables::ramUsage) + "mb / " + std::to_string(Variables::totalRam) + "mb");
+	//cpuCounterText.SetText(CpuUsageText());
 }

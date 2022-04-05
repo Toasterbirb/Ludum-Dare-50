@@ -10,16 +10,24 @@ using namespace Birb;
 static int width = 1280;
 static int height = 720;
 
-static ApplicationInfo appInfo;
+static ApplicationInfo appInfo("application");
 
 static std::string click_sound_path = appInfo.ResLocation + "/sounds/click.wav";
 static Audio::SoundFile ClickSound(click_sound_path);
+static Audio::SoundFile PopupSound(appInfo.ResLocation + "/sounds/window_popup.wav");
+static Audio::SoundFile RamUpgrade(appInfo.ResLocation + "/sounds/ram_upgrade.wav");
 static std::string mononoki_bold = appInfo.ResLocation + "/fonts/mononoki-Bold.ttf";
 static std::string mononoki_regular = appInfo.ResLocation + "/fonts/mononoki-Regular.ttf";
 static Font DefaultFont(mononoki_regular);
 
 /* Variables */
-static int totalRam = 1024;
-static int ramUsage = 1024;
-static double CPUmax = 100;
-static double CPUusage = 0;
+struct Variables
+{
+public:
+	static inline int totalRam = 1024;
+	static inline int ramUsage = 0;
+	static inline double CPUmax = 100;
+	static inline double CPUusage = 0;
+	static inline std::string username = getenv("USER");
+
+};
